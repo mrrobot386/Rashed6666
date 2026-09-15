@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dp"
+    android:layout_height="160dp"
+    android:background="@drawable/bg_overlay_orb">
+
+    <!-- Center Orb -->
+    <com.example.ui.main.OrbAnimationView
+        android:id="@+id/overlayOrbView"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_gravity="center" />
+
+    <!-- Label -->
+    <TextView
+        android:id="@+id/overlayLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="0.2"
+        android:text="MYRA"
+        android:textColor="@color/primary_accent"
+        android:textSize="11sp" />
+
+    <!-- Close Button -->
+    <ImageButton
+        android:id="@+id/overlayCloseBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Close Overlay"
+        android:padding="4dp"
+        android:src="@drawable/ic_close" />
+</FrameLayout>

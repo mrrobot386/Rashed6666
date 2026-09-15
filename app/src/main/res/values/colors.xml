@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_accent">#FF1744</color>
+    <color name="primary_accent_translucent">#22FF1744</color>
+    <color name="secondary_accent">#D500F9</color>
+    <color name="bg_dark">#050505</color>
+    <color name="bg_card">#111111</color>
+    <color name="bg_prime_card">#1A0000</color>
+    <color name="text_primary">#EEEEEE</color>
+    <color name="text_secondary">#888888</color>
+    <color name="text_hint">#555555</color>
+    <color name="success">#00E676</color>
+    <color name="red_overlay">#FF1744</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="orb_idle_start">#B71C1C</color>
+    <color name="orb_idle_end">#880E4F</color>
+    <color name="orb_active_start">#FF1744</color>
+    <color name="orb_active_end">#D500F9</color>
+    <color name="orb_speaking_start">#E040FB</color>
+    <color name="orb_speaking_end">#FF1744</color>
+    <color name="orb_thinking_start">#40C4FF</color>
+    <color name="orb_thinking_end">#00B0FF</color>
+</resources>

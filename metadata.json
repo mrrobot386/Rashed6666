@@ -1,0 +1,6 @@
+{
+  "name": "MYRA",
+  "description": "Android AI Voice Assistant powered by Gemini Live WebSocket, native PCM audio, and voice commands.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
