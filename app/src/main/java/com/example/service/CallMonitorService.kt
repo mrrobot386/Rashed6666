@@ -35,32 +35,15 @@ class CallMonitorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification())
-        registerPhoneStateListener()
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "MYRA Call Monitor",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Monitors incoming calls for voice announcements"
-            }
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(channel)
+        try {
+            registerPhoneStateListener()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing CallMonitorService: ${e.message}")
         }
     }
 
-    private fun buildNotification(): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("MYRA Call Assistant")
-            .setContentText("Monitoring incoming calls")
-            .setSmallIcon(R.drawable.ic_myra_notif)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
     }
 
     @Suppress("DEPRECATION")

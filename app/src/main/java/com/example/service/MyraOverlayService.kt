@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
@@ -19,6 +20,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import com.example.R
 import com.example.ui.main.MainActivity
 import com.example.ui.main.OrbAnimationView
@@ -41,7 +43,16 @@ class MyraOverlayService : Service() {
         super.onCreate()
         isRunning = true
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification())
+        try {
+            val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            } else {
+                0
+            }
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(), fgsType)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting foreground service: ${e.message}")
+        }
         showOverlayOrb()
     }
 

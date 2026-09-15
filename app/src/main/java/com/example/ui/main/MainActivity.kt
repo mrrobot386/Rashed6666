@@ -103,17 +103,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        try {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-        initChat()
-        initAudioAndAI()
-        initUIListeners()
-        startPeriodicSystemUpdates()
-        checkOverlayPermission()
-        checkAndRequestAppPermissions()
-        startCallMonitorService()
-        handleIncomingCallIntent(intent)
+            initChat()
+            initAudioAndAI()
+            initUIListeners()
+            startPeriodicSystemUpdates()
+            checkOverlayPermission()
+            checkAndRequestAppPermissions()
+            startCallMonitorService()
+            handleIncomingCallIntent(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onCreate: ${e.message}", e)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -305,24 +309,46 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startPeriodicSystemUpdates() {
-        // Register battery receiver
-        registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        // Register battery receiver (system broadcast)
+        try {
+            ContextCompat.registerReceiver(
+                this,
+                batteryReceiver,
+                IntentFilter(Intent.ACTION_BATTERY_CHANGED),
+                ContextCompat.RECEIVER_EXPORTED
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering battery receiver: ${e.message}")
+        }
 
-        // Register call ended receiver
-        registerReceiver(callEndedReceiver, IntentFilter(CallMonitorService.ACTION_CALL_ENDED))
+        // Register call ended receiver (internal app broadcast)
+        try {
+            ContextCompat.registerReceiver(
+                this,
+                callEndedReceiver,
+                IntentFilter(CallMonitorService.ACTION_CALL_ENDED),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering call ended receiver: ${e.message}")
+        }
 
         // Clock & RAM runnable
         val updateRunnable = object : Runnable {
             override fun run() {
-                val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                binding.timeText.text = timeStr
+                try {
+                    val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                    binding.timeText.text = timeStr
 
-                // RAM Free
-                val actManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                val memInfo = ActivityManager.MemoryInfo()
-                actManager.getMemoryInfo(memInfo)
-                val freeGb = memInfo.availMem / (1024.0 * 1024.0 * 1024.0)
-                binding.ramText.text = String.format(Locale.US, "RAM: %.1fGB FREE", freeGb)
+                    // RAM Free
+                    val actManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                    val memInfo = ActivityManager.MemoryInfo()
+                    actManager.getMemoryInfo(memInfo)
+                    val freeGb = memInfo.availMem / (1024.0 * 1024.0 * 1024.0)
+                    binding.ramText.text = String.format(Locale.US, "RAM: %.1fGB FREE", freeGb)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating RAM/Clock: ${e.message}")
+                }
 
                 handler.postDelayed(this, 3000)
             }
@@ -331,9 +357,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkOverlayPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            // Optional: User can grant in settings when needed
-            Log.d(TAG, "Overlay permission not granted yet")
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                // Optional: User can grant in settings when needed
+                Log.d(TAG, "Overlay permission not granted yet")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking overlay permission: ${e.message}")
         }
     }
 
@@ -353,22 +383,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (missing.isNotEmpty()) {
-            permissionLauncher.launch(missing.toTypedArray())
+            try {
+                permissionLauncher.launch(missing.toTypedArray())
+            } catch (e: Exception) {
+                Log.e(TAG, "Error launching permissions: ${e.message}")
+            }
         } else {
-            audioEngine.startRecording()
-            audioEngine.startPlayback()
-            geminiClient.connect()
+            try {
+                audioEngine.startRecording()
+                audioEngine.startPlayback()
+                geminiClient.connect()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error initializing audio engine: ${e.message}")
+            }
         }
     }
 
     private fun startCallMonitorService() {
         try {
             val serviceIntent = Intent(this, CallMonitorService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent)
-            } else {
-                startService(serviceIntent)
-            }
+            startService(serviceIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error starting CallMonitorService: ${e.message}")
         }
@@ -437,9 +471,13 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         try {
             unregisterReceiver(batteryReceiver)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unregistering battery receiver: ${e.message}")
+        }
+        try {
             unregisterReceiver(callEndedReceiver)
         } catch (e: Exception) {
-            Log.e(TAG, "Error unregistering receivers: ${e.message}")
+            Log.e(TAG, "Error unregistering call ended receiver: ${e.message}")
         }
         speechRecognizer?.destroy()
         speechRecognizer = null
